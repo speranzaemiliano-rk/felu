@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Felu · Estrella de Maldonado</title>
+<meta name="description" content="Felu, jugador de futsal de Estrella de Maldonado. Todos sus videos, temporada por temporada.">
+<meta property="og:title" content="Felu · Estrella de Maldonado">
+<meta property="og:description" content="Todos los videos de Felu, temporada por temporada.">
+<meta property="og:image" content="https://i.ytimg.com/vi/IWbZp_nwXhU/maxresdefault.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23d99a00' d='M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6z'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: cancha de futsal — una portada con el último video y debajo las temporadas como líneas de la cancha */
+:root{
+  --bg:#f3f6f9; --surface:#ffffff; --fg:#0f1d2b; --muted:#566778;
+  --court:#1f6fb2; --line:#d7e1ea; --star:#d99a00; --on-court:#ffffff;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0b1520; --surface:#122232; --fg:#e8eef4; --muted:#93a6b8;
+  --court:#2b86d1; --line:#22384c; --star:#f2b928; --on-court:#ffffff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b1520; --surface:#122232; --fg:#e8eef4; --muted:#93a6b8;
+  --court:#2b86d1; --line:#22384c; --star:#f2b928; --on-court:#ffffff; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55}
+.wrap{max-width:1100px;margin:0 auto;padding-inline:20px}
+a{color:inherit}
+a:focus-visible{outline:3px solid var(--star);outline-offset:3px;border-radius:6px}
+
+/* Portada */
+.hero{background:var(--court);color:var(--on-court);position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+   radial-gradient(circle at 78% 50%, transparent 0 118px, rgba(255,255,255,.22) 119px 121px, transparent 122px),
+   linear-gradient(90deg, transparent calc(78% - 1px), rgba(255,255,255,.22) calc(78% - 1px) calc(78% + 1px), transparent calc(78% + 1px))}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1fr 1.25fr;gap:40px;align-items:center;padding-block:56px}
+.club{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-size:13px}
+.club svg{width:20px;height:20px;fill:var(--star)}
+h1{font-family:var(--display);font-weight:900;font-size:clamp(72px,13vw,148px);line-height:.85;margin:14px 0 10px;letter-spacing:.01em;text-transform:uppercase}
+.bajada{font-size:18px;max-width:34ch;margin:0;opacity:.92}
+.datos{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;padding:0;list-style:none}
+.datos li{border:1px solid rgba(255,255,255,.45);border-radius:999px;padding:4px 12px;font-size:14px}
+.datos li.pend{border-style:dashed;opacity:.8}
+.destacado{display:block;text-decoration:none;min-width:0}
+.destacado .thumb{border-radius:10px;box-shadow:0 18px 40px rgba(0,0,0,.28)}
+.destacado .cap{display:flex;justify-content:space-between;gap:12px;margin-top:12px;font-size:15px}
+.destacado .cap b{font-family:var(--display);font-size:24px;letter-spacing:.03em;text-transform:uppercase}
+
+.thumb{position:relative;display:block;aspect-ratio:16/9;overflow:hidden;border-radius:8px;background:#000;max-width:100%}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s ease}
+.play{position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;background:rgba(10,20,30,.62);transition:background .2s}
+.play::after{content:"";position:absolute;left:22px;top:17px;border-style:solid;border-width:11px 0 11px 17px;border-color:transparent transparent transparent #fff}
+a:hover .thumb img{transform:scale(1.04)}
+a:hover .play{background:var(--star)}
+
+/* Videos */
+main{padding-block:48px 24px}
+.cabecera{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:8px}
+h2{font-family:var(--display);font-weight:900;font-size:44px;text-transform:uppercase;margin:0;letter-spacing:.02em;text-wrap:balance}
+.canal{font-weight:600;color:var(--court);text-decoration:none;border-bottom:2px solid currentColor}
+.temporada{margin-top:34px}
+.temporada h3{display:flex;align-items:baseline;gap:10px;font-family:var(--display);font-weight:900;font-size:30px;margin:0 0 14px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+.temporada h3 span{font-family:var(--body);font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:22px 18px}
+.clip{display:flex;flex-direction:column;gap:8px;text-decoration:none;min-width:0}
+.clip .play{width:42px;height:42px;margin:-21px 0 0 -21px}
+.clip .play::after{left:16px;top:12px;border-width:9px 0 9px 14px}
+.meta{display:flex;justify-content:space-between;gap:8px;font-size:14px}
+.meta .n{font-weight:600}
+.meta .f{color:var(--muted);font-variant-numeric:tabular-nums}
+
+footer{border-top:2px solid var(--line);margin-top:40px}
+footer .wrap{padding-block:22px 32px;color:var(--muted);font-size:14px;display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}
+
+@media (max-width:760px){
+  .hero .wrap{grid-template-columns:1fr;gap:28px;padding-block:36px}
+  .hero::before{background:radial-gradient(circle at 50% 100%, transparent 0 118px, rgba(255,255,255,.2) 119px 121px, transparent 122px)}
+  h2{font-size:36px}
+  .wrap{padding-inline:16px}
+}
+@media (prefers-reduced-motion:reduce){.thumb img,.play{transition:none}a:hover .thumb img{transform:none}}
+
+button.clip,button.destacado{all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:flex;flex-direction:column;gap:8px;min-width:0}
+button.destacado{display:block}
+button:focus-visible{outline:3px solid var(--star);outline-offset:3px;border-radius:8px}
+button:hover .thumb img{transform:scale(1.04)}
+button:hover .play{background:var(--star)}
+.thumb iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.yt{font-size:13px;color:var(--muted);text-decoration:none}
+.yt:hover{text-decoration:underline}
+.hero .yt{color:var(--on-court);opacity:.85}
+body{margin:0}
+/* Portada con video */
+.hero{min-height:min(78vh,620px);display:flex;align-items:flex-end;background:#0b1520}
+.hero::before{display:none}
+.hero .fondo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(0deg,rgba(8,18,30,.92) 0%,rgba(8,18,30,.55) 45%,rgba(8,18,30,.15) 100%)}
+.hero .wrap{z-index:1;width:100%;grid-template-columns:1fr;padding-block:40px 44px}
+.pausa{position:absolute;z-index:2;right:16px;top:16px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.5);
+  background:rgba(8,18,30,.45);color:#fff;font-size:12px;cursor:pointer}
+.pausa:focus-visible{outline:3px solid var(--star);outline-offset:2px}
+.ultimo{max-width:820px;margin:0 auto 48px}
+.ultimo .cap{color:var(--fg)}
+h1 .num{color:var(--star);font-size:.62em;margin-left:.18em;vertical-align:.42em;letter-spacing:0}
+@media (max-width:760px){.hero{min-height:480px}}
+@media (prefers-reduced-motion:reduce){.hero .fondo{display:none}.hero{background:#0b1520 url(portada.jpg) center/cover}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <video class="fondo" autoplay muted loop playsinline preload="auto" poster="portada.jpg" aria-hidden="true">
+    <source src="portada.mp4" type="video/mp4">
+  </video>
+  <button type="button" class="pausa" id="pausa" aria-label="Pausar el video de fondo">❚❚</button>
+  <div class="wrap">
+    <div>
+      <div class="club"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6z"/></svg><span id="club"></span></div>
+      <h1 id="nombre"></h1>
+      <p class="bajada" id="bajada"></p>
+      <ul class="datos" id="datos"></ul>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="ultimo" aria-label="Último video"><div id="destacado"></div></section>
+  <div class="cabecera">
+    <h2>Todos los videos</h2>
+    <a class="canal" id="canal" target="_blank" rel="noopener">Ver el canal en YouTube ↗</a>
+  </div>
+  <div id="temporadas"></div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span id="pie"></span>
+    <span>Videos de YouTube</span>
+  </div>
+</footer>
+
+<script>
+// ===================================================================
+//  DATOS DE LA PÁGINA — esto es lo único que hace falta editar.
+// ===================================================================
+var JUGADOR = {
+  nombre: 'Felu',
+  club: 'Estrella de Maldonado',
+  bajada: 'Futsal. Sus partidos, jugadas y goles desde 2023, temporada por temporada.',
+  numero: '10',          // se muestra grande al lado del nombre
+  canal: 'https://www.youtube.com/@pepy1983',
+  // Si un dato queda vacío ('') se muestra como «a completar».
+  datos: [
+    { etiqueta: 'Deporte',   valor: 'Futsal' },
+    { etiqueta: 'Posición',  valor: 'Centro' },
+    { etiqueta: 'Categoría', valor: '2016' },
+    { etiqueta: 'Camiseta',  valor: '10' }
+  ]
+};
+
+// Un video por línea. Para agregar uno nuevo: copiá una línea, poné el id
+// (lo que va después de «watch?v=» en el link de YouTube), la fecha y el título.
+// El primero de la lista es el que se muestra grande arriba.
+var VIDEOS = [
+  { id: 'IWbZp_nwXhU', fecha: '2026-05-21', titulo: 'Video 18' },
+  { id: 'VoGP9lWb4pU', fecha: '2025-11-25', titulo: 'Video 17' },
+  { id: 'L1U4P-TSmxI', fecha: '2025-11-18', titulo: 'Video 16' },
+  { id: '8r2OWSzCKhs', fecha: '2024-03-11', titulo: 'Video 15' },
+  { id: 'Y5TyzuG6x4M', fecha: '2024-01-26', titulo: 'Video 15' },
+  { id: 'groMKiT46UI', fecha: '2023-11-27', titulo: 'Video 14' },
+  { id: 'pDI4ZBcxYu0', fecha: '2023-08-15', titulo: 'Video 13' },
+  { id: 'vGG2kiiTfkw', fecha: '2023-06-13', titulo: 'Video 12' },
+  { id: 'ZHtzInHGIUI', fecha: '2023-06-12', titulo: 'Video 10' },
+  { id: 'yA_MC8yUrW4', fecha: '2023-06-10', titulo: 'Video 11' },
+  { id: '78ypRi7Ast8', fecha: '2023-05-12', titulo: 'Video 9' },
+  { id: 'e1uDWESQAI4', fecha: '2023-05-12', titulo: 'Video 8' },
+  { id: 'W0-kxhYURx0', fecha: '2023-05-11', titulo: 'Video 7' },
+  { id: 'W8nZwqz86Hs', fecha: '2023-05-11', titulo: 'Video 6' },
+  { id: 'O0JaTnPbIOY', fecha: '2023-05-11', titulo: 'Video 5' }
+];
+
+// ===================================================================
+//  De acá para abajo arma la página con los datos de arriba.
+// ===================================================================
+var MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+
+function fechaLinda(f) {
+  var p = f.split('-');
+  return parseInt(p[2], 10) + ' ' + MESES[parseInt(p[1], 10) - 1] + ' ' + p[0];
+}
+
+// Muestra la miniatura; el reproductor de YouTube recién se carga al tocarla.
+function tarjeta(v, grande) {
+  var img = 'https://i.ytimg.com/vi/' + v.id + (grande ? '/maxresdefault.jpg' : '/mqdefault.jpg');
+  var link = 'https://www.youtube.com/watch?v=' + v.id;
+  return '<div class="' + (grande ? 'destacado-box' : 'clip-box') + '">' +
+    '<button type="button" class="' + (grande ? 'destacado' : 'clip') + '" data-id="' + esc(v.id) + '" aria-label="Reproducir ' + esc(v.titulo) + '">' +
+      '<span class="thumb"><img src="' + img + '" alt="' + esc(v.titulo) + '" loading="lazy" width="' + (grande ? 1280 : 320) + '" height="' + (grande ? 720 : 180) + '"><span class="play" aria-hidden="true"></span></span>' +
+      (grande
+        ? '<span class="cap"><b>Último video · ' + esc(v.titulo) + '</b><span>' + fechaLinda(v.fecha) + '</span></span>'
+        : '<span class="meta"><span class="n">' + esc(v.titulo) + '</span><span class="f">' + fechaLinda(v.fecha) + '</span></span>') +
+    '</button>' +
+    '<a class="yt" href="' + link + '" target="_blank" rel="noopener">Abrir en YouTube ↗</a>' +
+  '</div>';
+}
+
+function reproducir(btn) {
+  var thumb = btn.querySelector('.thumb');
+  var id = btn.getAttribute('data-id');
+  thumb.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(id) +
+    '?autoplay=1&rel=0" title="Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
+  // Ya no es un botón: el reproductor maneja los clics.
+  var div = document.createElement('div');
+  div.className = btn.className;
+  while (btn.firstChild) div.appendChild(btn.firstChild);
+  btn.parentNode.replaceChild(div, btn);
+}
+
+function armar() {
+  document.getElementById('nombre').innerHTML = esc(JUGADOR.nombre) +
+    (JUGADOR.numero ? '<span class="num">' + esc(JUGADOR.numero) + '</span>' : '');
+  document.getElementById('club').textContent = JUGADOR.club;
+  document.getElementById('bajada').textContent = JUGADOR.bajada;
+  document.getElementById('canal').href = JUGADOR.canal;
+  document.getElementById('pie').textContent = JUGADOR.nombre + ' · ' + JUGADOR.club;
+
+  document.getElementById('datos').innerHTML = JUGADOR.datos.map(function (d) {
+    return d.valor
+      ? '<li>' + esc(d.etiqueta === 'Deporte' ? d.valor : d.etiqueta + ': ' + d.valor) + '</li>'
+      : '<li class="pend">' + esc(d.etiqueta) + ': a completar</li>';
+  }).join('');
+
+  if (!VIDEOS.length) return;
+  document.getElementById('destacado').innerHTML = tarjeta(VIDEOS[0], true);
+
+  // El resto, agrupado por año (el más nuevo primero).
+  var porAnio = {};
+  VIDEOS.slice(1).forEach(function (v) {
+    var a = v.fecha.slice(0, 4);
+    (porAnio[a] = porAnio[a] || []).push(v);
+  });
+  document.getElementById('temporadas').innerHTML = Object.keys(porAnio).sort().reverse().map(function (a) {
+    return '<section class="temporada"><h3><span>Temporada</span> ' + a + '</h3>' +
+      '<div class="grid">' + porAnio[a].map(function (v) { return tarjeta(v, false); }).join('') + '</div></section>';
+  }).join('');
+
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-id]');
+    if (btn) reproducir(btn);
+  });
+
+  // Botón para pausar/reanudar el video de fondo.
+  var vid = document.querySelector('.hero .fondo');
+  var pausa = document.getElementById('pausa');
+  pausa.addEventListener('click', function () {
+    if (vid.paused) { vid.play(); pausa.textContent = '❚❚'; pausa.setAttribute('aria-label', 'Pausar el video de fondo'); }
+    else { vid.pause(); pausa.textContent = '▶'; pausa.setAttribute('aria-label', 'Reproducir el video de fondo'); }
+  });
+}
+
+armar();
+</script>
+</body>
+</html>
