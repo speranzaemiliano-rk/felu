@@ -107,6 +107,10 @@ button.clip:active,button.destacado:active{transform:scale(.97)}
   .yt:hover{text-decoration:underline}
 }
 /* El reproductor aparece como material, no de golpe */
+/* Si el celular no deja arrancar el video solo, se muestra un botón de play grande */
+.media .play{display:none;z-index:2;cursor:pointer;pointer-events:none}
+.media.quieto .play{display:block}
+.media.quieto{cursor:pointer}
 .thumb iframe{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:0;transform:scale(.985);
   transition:opacity .35s var(--ease-out),transform .45s var(--ease-out)}
 .thumb iframe.listo{opacity:1;transform:none}
@@ -127,10 +131,8 @@ footer .wrap{padding-block:22px 32px;color:var(--muted);font-size:.875rem;displa
   h2{font-size:2.25rem}
   .wrap{padding-inline:16px}
 }
-/* Menos movimiento: sin video de fondo ni zoom; sólo fundidos */
+/* Menos movimiento: el video no arranca solo (lo maneja el JS) y sin zoom; sólo fundidos */
 @media (prefers-reduced-motion:reduce){
-  .hero .fondo,.pausa{display:none}
-  .media{background:var(--ink) url(portada.jpg) center/contain no-repeat}
   .clip,.destacado,.thumb img,.play,.pausa{transition:none}
   button.clip:active,button.destacado:active,button:hover .thumb img,button:hover .play{transform:none}
   .thumb iframe{transform:none;transition:opacity .2s linear}
@@ -144,9 +146,8 @@ footer .wrap{padding-block:22px 32px;color:var(--muted);font-size:.875rem;displa
 <body>
 <header class="hero">
   <div class="media">
-  <video class="fondo" autoplay muted loop playsinline preload="auto" poster="portada.jpg" aria-hidden="true">
-    <source src="portada.mp4" type="video/mp4">
-  </video>
+  <video class="fondo" muted loop playsinline preload="metadata" poster="portada.jpg" aria-hidden="true"></video>
+  <span class="play" aria-hidden="true"></span>
   <button type="button" class="pausa" id="pausa" aria-label="Pausar el video de fondo"></button>
   <button type="button" class="instalar" id="instalar" hidden>Instalar app</button>
   </div>
@@ -299,28 +300,55 @@ function armar() {
     pausa: '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.5" height="12" rx="1"/><rect x="9.5" y="2" width="3.5" height="12" rx="1"/></svg>',
     play:  '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11a.8.8 0 0 0 1.2.7l9-5.5a.8.8 0 0 0 0-1.4l-9-5.5A.8.8 0 0 0 4 2.5z"/></svg>'
   };
+  var media = document.querySelector('.media');
   var pausadoAMano = false;
+  var bloqueado = false;   // el navegador no lo dejó arrancar solo
+  var reducir = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // En el celular, un archivo más liviano (carga antes y gasta menos datos).
+  vid.muted = true;  // iOS y Android sólo dejan arrancar solos los videos sin sonido
+  // Si el navegador no reproduce MP4, usa la copia en WebM.
+  var mp4 = vid.canPlayType('video/mp4; codecs="avc1.4d401f"');
+  vid.src = !mp4 ? 'portada.webm'
+    : window.matchMedia('(max-width: 760px)').matches ? 'portada-movil.mp4' : 'portada.mp4';
+
   function pintarPausa() {
     pausa.innerHTML = vid.paused ? ICONO.play : ICONO.pausa;
     pausa.setAttribute('aria-label', vid.paused ? 'Reproducir el video de fondo' : 'Pausar el video de fondo');
+    media.classList.toggle('quieto', vid.paused && bloqueado);
   }
-  // pointerdown: la respuesta llega al apretar, no al soltar
-  pausa.addEventListener('pointerdown', function (e) {
-    if (e.button !== 0) return;
-    pausadoAMano = !vid.paused;
-    if (vid.paused) { var pr = vid.play(); if (pr && pr.catch) pr.catch(function () {}); } else vid.pause();
+  function arrancar() {
+    var pr = vid.play();
+    // Si el celular lo bloquea (ahorro de batería, ahorro de datos), queda el play grande.
+    if (pr && pr.catch) pr.catch(function () { bloqueado = true; pintarPausa(); });
+  }
+  // 'click' y no 'pointerdown': en el celular sólo el toque completo cuenta como gesto
+  // del usuario, y sin gesto el navegador no deja arrancar el video.
+  pausa.addEventListener('click', function (e) {
+    e.stopPropagation();
+    if (vid.paused) { pausadoAMano = false; arrancar(); }
+    else { pausadoAMano = true; vid.pause(); }
   });
-  pausa.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pausa.dispatchEvent(new PointerEvent('pointerdown', { button: 0 })); }
+  // Tocar el video cuando está quieto también lo arranca.
+  media.addEventListener('click', function (e) {
+    if (e.target.closest('button')) return;
+    if (vid.paused) { pausadoAMano = false; arrancar(); }
   });
-  vid.addEventListener('play', pintarPausa);
+  vid.addEventListener('play', function () { bloqueado = false; pintarPausa(); });
   vid.addEventListener('pause', pintarPausa);
   pintarPausa();
+
+  if (reducir) {
+    pausadoAMano = true;   // con «reducir movimiento» no arranca solo, pero se puede tocar play
+    bloqueado = true;
+    pintarPausa();
+  } else {
+    arrancar();
+  }
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(function (entradas) {
       if (pausadoAMano) return;
-      if (entradas[0].isIntersecting) { var pr = vid.play(); if (pr && pr.catch) pr.catch(function () {}); }
-      else vid.pause();
+      if (entradas[0].isIntersecting) arrancar(); else vid.pause();
     }, { threshold: 0.15 }).observe(vid);
   }
 

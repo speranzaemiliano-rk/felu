@@ -21,7 +21,9 @@ Todo lo que se cambia está arriba de todo en el `<script>` de `index.html`:
 | Archivo | Qué es |
 |---|---|
 | `index.html` | La página completa (diseño + datos + código). |
-| `portada.mp4` | El video de fondo de la portada (sin sonido, en loop). |
+| `portada.mp4` | El video de fondo de la portada en alta calidad, para compu (sin sonido, en loop). |
+| `portada-movil.mp4` | El mismo video, más liviano, para celulares. |
+| `portada.webm` | Copia de respaldo para navegadores que no reproducen MP4. |
 | `portada.jpg` | La imagen que se ve mientras carga el video. |
 | `manifest.json` | Nombre, colores e íconos de la app instalada. |
 | `sw.js` | *Service worker*: hace que se pueda instalar y que abra aunque no haya señal. |
@@ -34,4 +36,4 @@ Todo lo que se cambia está arriba de todo en el `<script>` de `index.html`:
 
 Cada vez que cambies algo, subí también el número de `CACHE` en `sw.js` (`felu-v2` → `felu-v3`) para que los celulares que la tienen instalada bajen la versión nueva.
 
-Para cambiar el video de portada, reemplazá `portada.mp4` por otro con el mismo nombre. Conviene que sea corto (10–20 segundos) y horizontal (16:9): se muestra entero, sin recortes.
+Para cambiar el video de portada, reemplazá los tres archivos de video (`portada.mp4`, `portada-movil.mp4` y `portada.webm`) por versiones nuevas con los mismos nombres. Conviene que sea corto (10–20 segundos) y horizontal (16:9): se muestra entero, sin recortes.

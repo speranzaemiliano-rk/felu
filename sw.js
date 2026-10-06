@@ -1,6 +1,6 @@
 // Service worker de la página de Felu.
 // Cambiar CACHE cada vez que se publica una versión nueva, así se descarga lo nuevo.
-var CACHE = 'felu-v2';
+var CACHE = 'felu-v3';
 var BASE = ['./', 'index.html', 'manifest.json', 'portada.jpg',
   'iconos/icono-192.png', 'iconos/icono-512.png', 'iconos/apple-touch-icon.png'];
 
@@ -19,7 +19,7 @@ self.addEventListener('fetch', function (e) {
   var req = e.request;
   var url = new URL(req.url);
   // Sólo lo propio. YouTube, fuentes y el video (pedidos por partes) van directo a la red.
-  if (req.method !== 'GET' || url.origin !== location.origin || url.pathname.endsWith('.mp4')) return;
+  if (req.method !== 'GET' || url.origin !== location.origin || /\.(mp4|webm)$/.test(url.pathname)) return;
 
   // La página: primero la red (para ver siempre lo último), y si no hay conexión, la guardada.
   if (req.mode === 'navigate') {
