@@ -1,6 +1,6 @@
 // Service worker de la página de Felu.
 // Cambiar CACHE cada vez que se publica una versión nueva, así se descarga lo nuevo.
-var CACHE = 'felu-v3';
+var CACHE = 'felu-v4';
 var BASE = ['./', 'index.html', 'manifest.json', 'portada.jpg',
   'iconos/icono-192.png', 'iconos/icono-512.png', 'iconos/apple-touch-icon.png'];
 

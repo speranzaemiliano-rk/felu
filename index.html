@@ -131,20 +131,57 @@ footer .wrap{padding-block:22px 32px;color:var(--muted);font-size:.875rem;displa
   h2{font-size:2.25rem}
   .wrap{padding-inline:16px}
 }
+/* ---------- Barra de temporadas: material translúcido que queda fija al bajar ---------- */
+html{scroll-behavior:smooth}
+.barra{position:sticky;top:0;z-index:5;padding-top:env(safe-area-inset-top,0px);
+  background:color-mix(in srgb,var(--bg) 78%,transparent);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%)}
+/* Borde de scroll: un fundido suave en vez de una línea dura */
+.barra::after{content:"";position:absolute;left:0;right:0;top:100%;height:14px;pointer-events:none;
+  background:linear-gradient(color-mix(in srgb,var(--bg) 60%,transparent),transparent)}
+.barra-in{display:flex;align-items:center;gap:14px;min-height:56px}
+.marca{flex:none;font-family:var(--display);font-weight:900;font-size:1.5rem;line-height:1;letter-spacing:-.01em;text-transform:uppercase;text-decoration:none;
+  opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity .3s var(--ease-out),transform .4s var(--ease-out)}
+.marca b{color:var(--star);font-size:.75em;margin-left:.12em;vertical-align:.25em}
+.barra.fija .marca{opacity:1;transform:none;pointer-events:auto}
+.chips{display:flex;gap:6px;min-width:0;overflow-x:auto;scrollbar-width:none;margin-left:auto;padding-block:8px}
+.chips::-webkit-scrollbar{display:none}
+.chips a{flex:none;display:inline-flex;align-items:center;height:36px;padding:0 14px;border-radius:999px;text-decoration:none;
+  font-weight:600;font-size:.875rem;letter-spacing:.01em;color:var(--fg);font-variant-numeric:tabular-nums;
+  transition:transform var(--press) ease-out,background-color .25s,color .25s}
+.chips a[aria-current="true"]{background:var(--fg);color:var(--bg)}
+.chips a:active{transform:scale(.95)}
+#ultimo,.temporada{scroll-margin-top:calc(72px + env(safe-area-inset-top,0px))}
+/* Links: respuesta al tocar */
+.canal,.yt,.marca{transition:opacity var(--press) ease-out}
+.canal:active,.yt:active{opacity:.55}
+@media (hover:hover){.chips a:not([aria-current="true"]):hover{background:color-mix(in srgb,var(--fg) 8%,transparent)}}
+@media (max-width:760px){.marca{font-size:1.25rem}.chips{margin-left:0}.barra.fija .chips{margin-left:auto}}
+/* Más contraste: superficies sólidas y bordes definidos */
+@media (prefers-contrast:more){
+  :root{--muted:var(--fg)}
+  .barra{background:var(--bg);-webkit-backdrop-filter:none;backdrop-filter:none;border-bottom:2px solid var(--fg)}
+  .barra::after{display:none}
+  .chips a{border:1px solid var(--fg)}
+  .pausa,.instalar,.play,.datos li{-webkit-backdrop-filter:none;backdrop-filter:none;background:#0b1520;border-color:#fff}
+}
 /* Menos movimiento: el video no arranca solo (lo maneja el JS) y sin zoom; sólo fundidos */
 @media (prefers-reduced-motion:reduce){
   .clip,.destacado,.thumb img,.play,.pausa{transition:none}
   button.clip:active,button.destacado:active,button:hover .thumb img,button:hover .play{transform:none}
   .thumb iframe{transform:none;transition:opacity .2s linear}
+  html{scroll-behavior:auto}
+  .marca{transform:none;transition:opacity .2s linear}
 }
 /* Menos transparencia: superficies sólidas */
 @media (prefers-reduced-transparency:reduce){
   .pausa,.instalar,.play,.datos li{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(8,18,30,.85)}
+  .barra{background:var(--bg);-webkit-backdrop-filter:none;backdrop-filter:none}
 }
 </style>
 </head>
 <body>
-<header class="hero">
+<header class="hero" id="arriba">
   <div class="media">
   <video class="fondo" muted loop playsinline preload="metadata" poster="portada.jpg" aria-hidden="true"></video>
   <span class="play" aria-hidden="true"></span>
@@ -161,8 +198,15 @@ footer .wrap{padding-block:22px 32px;color:var(--muted);font-size:.875rem;displa
   </div>
 </header>
 
+<nav class="barra" id="barra" aria-label="Ir a">
+  <div class="wrap barra-in">
+    <a class="marca" id="marca" href="#arriba" aria-label="Volver arriba"></a>
+    <div class="chips" id="chips"></div>
+  </div>
+</nav>
+
 <main class="wrap">
-  <section class="ultimo" aria-label="Último video"><div id="destacado"></div></section>
+  <section class="ultimo" id="ultimo" aria-label="Último video"><div id="destacado"></div></section>
   <div class="cabecera">
     <h2>Todos los videos</h2>
     <a class="canal" id="canal" target="_blank" rel="noopener">Ver el canal en YouTube ↗</a>
@@ -284,9 +328,46 @@ function armar() {
     (porAnio[a] = porAnio[a] || []).push(v);
   });
   document.getElementById('temporadas').innerHTML = Object.keys(porAnio).sort().reverse().map(function (a) {
-    return '<section class="temporada"><h3><span>Temporada</span> ' + a + '</h3>' +
+    return '<section class="temporada" id="t' + a + '"><h3><span>Temporada</span> ' + a + '</h3>' +
       '<div class="grid">' + porAnio[a].map(function (v) { return tarjeta(v, false); }).join('') + '</div></section>';
   }).join('');
+
+  // Barra: un chip por temporada, marca cuál se está viendo y muestra el nombre al pasar la portada.
+  var anios = Object.keys(porAnio).sort().reverse();
+  var chips = document.getElementById('chips');
+  chips.innerHTML = '<a href="#ultimo">Último</a>' + anios.map(function (a) { return '<a href="#t' + a + '">' + a + '</a>'; }).join('');
+  document.getElementById('marca').innerHTML = esc(JUGADOR.nombre) + (JUGADOR.numero ? '<b>' + esc(JUGADOR.numero) + '</b>' : '');
+  if ('IntersectionObserver' in window) {
+    var barra = document.getElementById('barra');
+    new IntersectionObserver(function (en) {
+      barra.classList.toggle('fija', !en[0].isIntersecting);
+    }, { rootMargin: '-60px 0px 0px 0px' }).observe(document.getElementById('arriba'));
+
+    var marcar = function (id) {
+      Array.prototype.forEach.call(chips.children, function (c) {
+        var on = c.getAttribute('href') === '#' + id;
+        if (on) c.setAttribute('aria-current', 'true'); else c.removeAttribute('aria-current');
+        // En el celular, que el chip activo quede a la vista dentro de la fila
+        if (on && chips.scrollWidth > chips.clientWidth) {
+          chips.scrollTo({ left: c.offsetLeft - 16, behavior: reducirMov ? 'auto' : 'smooth' });
+        }
+      });
+    };
+    var reducirMov = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var secciones = [document.getElementById('ultimo')].concat(anios.map(function (a) { return document.getElementById('t' + a); }));
+    // Activa = la última sección cuyo título ya pasó por debajo de la barra.
+    var actual = null, pendiente = false;
+    var revisar = function () {
+      pendiente = false;
+      var limite = barra.getBoundingClientRect().bottom + 24, id = secciones[0].id;
+      secciones.forEach(function (s) { if (s.getBoundingClientRect().top <= limite) id = s.id; });
+      if (id !== actual) { actual = id; marcar(id); }
+    };
+    window.addEventListener('scroll', function () {
+      if (!pendiente) { pendiente = true; requestAnimationFrame(revisar); }
+    }, { passive: true });
+    revisar();
+  }
 
   document.addEventListener('click', function (e) {
     var btn = e.target.closest('button[data-id]');
